@@ -1,26 +1,23 @@
 advent_of_code::solution!(1);
 
 
-const R: &str = "R";
-const L: &str = "L";
+const R: u8 = b'R';
+const L: u8 = b'L';
 
 pub fn part_one(input: &str) -> Option<u64> {
     let mut vaultcode: i32 = 50;
     let mut vaultzero: u64 = 0;
 
     for line in input.lines() {
-        match line.split_at(1){
-            (R, number) => {
-                vaultcode = (vaultcode + number.parse::<i32>().unwrap()).rem_euclid(100);
-            }
-            (L, number) => {
-                vaultcode = (vaultcode - number.parse::<i32>().unwrap()).rem_euclid(100);
-            }
-            _ => {}
-        };
+        let (direction, rest) = line.split_at(1);
+        let number: i32 = rest.parse().unwrap();
+        match direction.as_bytes()[0] {
+            R => vaultcode = (vaultcode + number).rem_euclid(100),
+            L => vaultcode = (vaultcode - number).rem_euclid(100),
+            _    => {}
+        }
         if vaultcode == 0 { vaultzero += 1; }
     }
-
     return Some(vaultzero);
 }
 
