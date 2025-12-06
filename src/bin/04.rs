@@ -63,25 +63,27 @@ pub fn part_two(input: &str) -> Option<u32> {
 
     loop {
         // Phase: find all rolls to remove
-        let to_remove_rolls: Vec<_> = (0..x_width_max)
-            .flat_map(|x| (0..y_height_max).map(move |y| (x, y))) //Make itterator for whole grid
-            .filter(|&(x, y)| grid[y as usize][x as usize] == 1) //Filter all field with a @/1 and continue
-            .filter(|&(x, y)| {
-                let neighbors = DIRECTIONS
-                    .iter()
-                    .filter(|&&(dx, dy)| {
+        let mut to_remove_rolls = Vec::new();
+
+        for x in 0..x_width_max {
+            for y in 0..y_height_max {
+                if grid[y as usize][x as usize] == 1 {
+                    let mut neighbors = 0;
+                    for &(dx, dy) in &DIRECTIONS {
                         let nx = x + dx;
                         let ny = y + dy;
-                        nx >= 0
-                            && nx < x_width_max
-                            && ny >= 0
-                            && ny < y_height_max
-                            && grid[ny as usize][nx as usize] == 1
-                    })
-                    .count();
-                neighbors < 4
-            })
-            .collect(); //Filter in all diretions and see if there are more then 4 @/1's
+                        if nx >= 0 && nx < x_width_max && ny >= 0 && ny < y_height_max {
+                            if grid[ny as usize][nx as usize] == 1 {
+                                neighbors += 1;
+                            }
+                        }
+                    }
+                    if neighbors < 4 {
+                        to_remove_rolls.push((x as usize, y as usize));
+                    }
+                }
+            }
+        }
 
         // Nothing more to remove. break
         if to_remove_rolls.is_empty() {
